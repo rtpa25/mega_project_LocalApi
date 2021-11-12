@@ -18,14 +18,12 @@ export const createCellsRouter = (filename: string, dir: string) => {
 
   router.get('/cells', async (req, res) => {
     try {
-      //Read the file
-      const result = await fs.readFile(fullPath, { encoding: 'utf8' });
+      // Read the file
+      const result = await fs.readFile(fullPath, { encoding: 'utf-8' });
+
       res.send(JSON.parse(result));
     } catch (err: any) {
-      //if read throw an error
-      //inspect it and see if it says that it does not exist
       if (err.code === 'ENOENT') {
-        //add in code to create a file and add default cells
         await fs.writeFile(fullPath, '[]', 'utf-8');
         res.send([]);
       } else {
@@ -35,13 +33,15 @@ export const createCellsRouter = (filename: string, dir: string) => {
   });
 
   router.post('/cells', async (req, res) => {
-    //Take the list of cells from the request object
-    //serialize the list of cells
+    // Take the list of cells from the request obj
+    // serialize them
     const { cells }: { cells: Cell[] } = req.body;
-    //write the cells into the file
+
+    // Write the cells into the file
     await fs.writeFile(fullPath, JSON.stringify(cells), 'utf-8');
-    //send result status
+
     res.send({ status: 'ok' });
   });
+
   return router;
 };
